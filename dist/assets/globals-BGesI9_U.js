@@ -1,4 +1,4 @@
-import { p as profileRepository, D as DEFAULT_SETTINGS, s as settingsRepository } from "./settingsRepository-DrhilTTw.js";
+import { p as profileRepository, D as DEFAULT_SETTINGS, s as settingsRepository } from "./settingsRepository-BCIK-jsw.js";
 (function polyfill() {
   const relList = document.createElement("link").relList;
   if (relList && relList.supports && relList.supports("modulepreload")) {

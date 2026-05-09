@@ -1,4 +1,4 @@
-# Indian Form AutoFill AI
+# Form Auto Filler AI
 
 A production-grade Chrome Extension (Manifest V3) for auto-filling forms with realistic Indian data and personal profiles.
 

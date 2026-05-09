@@ -23,7 +23,7 @@ function ToggleRow({
         )}
       >
         <span className={cn(
-          'absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform',
+          'absolute left-0 top-1 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200',
           value ? 'translate-x-6' : 'translate-x-1'
         )} />
       </button>
@@ -231,7 +231,7 @@ export default function SettingsPage() {
         </button>
 
         <p className="text-center text-xs text-slate-400 pb-2">
-          Indian Form AutoFill AI v1.0.0
+          Form Auto Filler AI v1.0.0
         </p>
       </div>
     </div>

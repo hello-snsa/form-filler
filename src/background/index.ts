@@ -53,7 +53,7 @@ chrome.commands.onCommand.addListener(async (command) => {
     chrome.notifications.create({
       type: 'basic',
       iconUrl: 'icons/icon48.png',
-      title: 'Indian Form AutoFill AI',
+      title: 'Form Auto Filler AI',
       message: `Auto-fill ${!settings.autoFillOnLoad ? 'enabled' : 'disabled'}`,
     });
   }

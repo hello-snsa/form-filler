@@ -1,5 +1,5 @@
-import { r as reactExports, j as jsxRuntimeExports, c as createLucideIcon, u as useProfileStore, a as useSettingsStore, R as React, b as cn, Z as Zap, S as Settings, d as client } from "./globals-CFFLk1Pz.js";
-import "./settingsRepository-DrhilTTw.js";
+import { r as reactExports, j as jsxRuntimeExports, c as createLucideIcon, u as useProfileStore, a as useSettingsStore, R as React, b as cn, Z as Zap, S as Settings, d as client } from "./globals-BGesI9_U.js";
+import "./settingsRepository-BCIK-jsw.js";
 const LayoutGroupContext = reactExports.createContext({});
 function useConstant(init) {
   const ref = reactExports.useRef(null);
@@ -14981,7 +14981,7 @@ function ToggleRow({
           value ? "bg-brand-500" : "bg-slate-200 dark:bg-slate-700"
         ),
         children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: cn(
-          "absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform",
+          "absolute left-0 top-1 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200",
           value ? "translate-x-6" : "translate-x-1"
         ) })
       }
@@ -15194,7 +15194,7 @@ function SettingsPage() {
         ]
       }
     ),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-center text-xs text-slate-400 pb-2", children: "Indian Form AutoFill AI v1.0.0" })
+    /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-center text-xs text-slate-400 pb-2", children: "Form Auto Filler AI v1.0.0" })
   ] }) });
 }
 const NAV = [
@@ -15243,7 +15243,7 @@ function App() {
         ),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-6 h-6 rounded-md bg-white/20 flex items-center justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white text-xs font-bold", children: "AI" }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white font-semibold text-sm", children: "Indian AutoFill AI" })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white font-semibold text-sm", children: "Form Auto Filler AI" })
         ] })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-1", children: NAV.slice(1).map((item) => /* @__PURE__ */ jsxRuntimeExports.jsx(

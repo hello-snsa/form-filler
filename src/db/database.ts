@@ -33,7 +33,7 @@ class AppDatabase extends Dexie {
   formHistory!: Table<FormHistoryRecord, number>;
 
   constructor() {
-    super('IndianFormAutofillAI');
+    super('FormAutoFillerAI');
     this.version(1).stores({
       profiles: '++_id, id, name, isDefault, updatedAt',
       settings: 'id',

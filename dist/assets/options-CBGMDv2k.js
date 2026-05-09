@@ -1,5 +1,5 @@
-import { c as createLucideIcon, r as reactExports, a as useSettingsStore, u as useProfileStore, j as jsxRuntimeExports, Z as Zap, S as Settings, b as cn, d as client, R as React } from "./globals-CFFLk1Pz.js";
-import "./settingsRepository-DrhilTTw.js";
+import { c as createLucideIcon, r as reactExports, a as useSettingsStore, u as useProfileStore, j as jsxRuntimeExports, Z as Zap, S as Settings, b as cn, d as client, R as React } from "./globals-BGesI9_U.js";
+import "./settingsRepository-BCIK-jsw.js";
 /**
  * @license lucide-react v0.344.0 - ISC
  *
@@ -57,7 +57,7 @@ function OptionsApp() {
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 mb-6 px-2", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-accent-500 flex items-center justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Zap, { size: 16, className: "text-white" }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-bold text-slate-900 dark:text-white", children: "Indian AutoFill" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-bold text-slate-900 dark:text-white", children: "Form Auto Filler AI" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500", children: "AI Form Filler" })
         ] })
       ] }),
@@ -113,7 +113,7 @@ function SettingsSection() {
                 settings[key] ? "bg-brand-500" : "bg-slate-200 dark:bg-slate-700"
               ),
               children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: cn(
-                "absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform",
+                "absolute left-0 top-1 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200",
                 settings[key] ? "translate-x-7" : "translate-x-1"
               ) })
             }
@@ -196,7 +196,7 @@ function AboutSection() {
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-500 to-accent-500 flex items-center justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Zap, { size: 28, className: "text-white" }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-xl font-bold text-slate-900 dark:text-white", children: "Indian Form AutoFill AI" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-xl font-bold text-slate-900 dark:text-white", children: "Form Auto Filler AI" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500", children: "Version 1.0.0" })
         ] })
       ] }),

@@ -68,7 +68,7 @@ export default function App() {
             <div className="w-6 h-6 rounded-md bg-white/20 flex items-center justify-center">
               <span className="text-white text-xs font-bold">AI</span>
             </div>
-            <span className="text-white font-semibold text-sm">Indian AutoFill AI</span>
+            <span className="text-white font-semibold text-sm">Form Auto Filler AI</span>
           </div>
         </div>
         <div className="flex items-center gap-1">

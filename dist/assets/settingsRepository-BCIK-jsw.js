@@ -2550,7 +2550,7 @@ je.rejectionMapper = function(e2, t2) {
 }, F(R, Et);
 class AppDatabase extends Xn {
   constructor() {
-    super("IndianFormAutofillAI");
+    super("FormAutoFillerAI");
     __publicField(this, "profiles");
     __publicField(this, "settings");
     __publicField(this, "fileBlobs");

@@ -918,6 +918,9 @@ video {
 .inset-0 {
   inset: 0px;
 }
+.left-0 {
+  left: 0px;
+}
 .left-2\.5 {
   left: 0.625rem;
 }
@@ -1663,6 +1666,9 @@ video {
   transition-property: transform;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
+}
+.duration-200 {
+  transition-duration: 200ms;
 }
 .last\:border-0:last-child {
   border-width: 0px;

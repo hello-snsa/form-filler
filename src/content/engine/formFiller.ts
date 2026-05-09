@@ -128,7 +128,7 @@ async function fillFileInput(el: HTMLInputElement, profile: Profile, category: F
   await wait(delay);
   let storedFile;
 
-  if (category === 'resume' || category === 'resume') {
+  if (category === 'resume') {
     storedFile = profile.documents.resumeFile;
   } else if (category === 'profileImage') {
     storedFile = profile.documents.profileImage;

@@ -32,7 +32,7 @@ export default function OptionsApp() {
             <Zap size={16} className="text-white" />
           </div>
           <div>
-            <p className="text-sm font-bold text-slate-900 dark:text-white">Indian AutoFill</p>
+            <p className="text-sm font-bold text-slate-900 dark:text-white">Form Auto Filler AI</p>
             <p className="text-xs text-slate-500">AI Form Filler</p>
           </div>
         </div>
@@ -98,7 +98,7 @@ function SettingsSection() {
                   )}
                 >
                   <span className={cn(
-                    'absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform',
+                    'absolute left-0 top-1 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200',
                     settings[key as keyof typeof settings] ? 'translate-x-7' : 'translate-x-1'
                   )} />
                 </button>
@@ -207,7 +207,7 @@ function AboutSection() {
             <Zap size={28} className="text-white" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white">Indian Form AutoFill AI</h2>
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white">Form Auto Filler AI</h2>
             <p className="text-slate-500">Version 1.0.0</p>
           </div>
         </div>
