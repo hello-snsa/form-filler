@@ -1,4 +1,4 @@
-import { r as reactExports, j as jsxRuntimeExports, c as createLucideIcon, u as useProfileStore, a as useSettingsStore, R as React, b as cn, Z as Zap, S as Settings, d as client } from "./globals-BbbGDKs3.js";
+import { r as reactExports, j as jsxRuntimeExports, c as createLucideIcon, u as useProfileStore, a as useSettingsStore, R as React, b as cn, Z as Zap, S as Settings, d as client } from "./globals-CRpjAEmV.js";
 import "./settingsRepository-BCIK-jsw.js";
 const LayoutGroupContext = reactExports.createContext({});
 function useConstant(init) {
@@ -13998,12 +13998,14 @@ const profileSchema = objectType({
   degree: stringType().optional(),
   graduationYear: stringType().optional(),
   cgpa: stringType().optional(),
+  experienceRaw: stringType().optional(),
+  experienceUseRaw: booleanType().optional(),
   // Identity
   aadhaarNumber: stringType().optional(),
   panNumber: stringType().optional(),
   passportNumber: stringType().optional()
 });
-const TABS = ["Basic", "Personal", "Address", "Professional", "Identity"];
+const TABS = ["Basic", "Personal", "Address", "Professional", "Identity", "Custom"];
 const COLORS = ["#6366f1", "#8b5cf6", "#ec4899", "#f43f5e", "#f97316", "#10b981", "#06b6d4", "#3b82f6"];
 const INDIAN_STATES = [
   "Andhra Pradesh",
@@ -14048,8 +14050,11 @@ function ProfileFormModal({ profile, onClose }) {
   const { createProfile, updateProfile } = useProfileStore();
   const [tab, setTab] = reactExports.useState("Basic");
   const [saving, setSaving] = reactExports.useState(false);
+  const [customFields, setCustomFields] = reactExports.useState(
+    () => ((profile == null ? void 0 : profile.customFields) ?? []).map((cf) => ({ id: cf.id, key: cf.key, value: cf.value }))
+  );
   const isEditing = !!profile;
-  const { register, handleSubmit, control, setValue, getValues, formState: { errors } } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, watch, formState: { errors } } = useForm({
     resolver: t(profileSchema),
     defaultValues: profile ? {
       name: profile.name,
@@ -14080,6 +14085,8 @@ function ProfileFormModal({ profile, onClose }) {
       department: profile.professional.department,
       experienceYears: profile.professional.experienceYears,
       experienceMonths: profile.professional.experienceMonths,
+      experienceRaw: profile.professional.experienceRaw ?? "",
+      experienceUseRaw: profile.professional.experienceUseRaw ?? false,
       skills: profile.professional.skills.join(", "),
       noticePeriod: profile.professional.noticePeriod,
       currentSalary: profile.professional.currentSalary,
@@ -14167,6 +14174,8 @@ function ProfileFormModal({ profile, onClose }) {
           department: values.department ?? "",
           experienceYears: values.experienceYears ?? 0,
           experienceMonths: values.experienceMonths ?? 0,
+          experienceRaw: values.experienceRaw ?? "",
+          experienceUseRaw: values.experienceUseRaw ?? false,
           skills: (values.skills ?? "").split(",").map((s2) => s2.trim()).filter(Boolean),
           noticePeriod: values.noticePeriod ?? "",
           currentSalary: values.currentSalary ?? "",
@@ -14185,7 +14194,7 @@ function ProfileFormModal({ profile, onClose }) {
           passportNumber: values.passportNumber
         },
         documents: (profile == null ? void 0 : profile.documents) ?? { certificates: [] },
-        customFields: (profile == null ? void 0 : profile.customFields) ?? [],
+        customFields: customFields.filter((cf) => cf.key.trim() && cf.value.trim()).map((cf) => ({ id: cf.id, key: cf.key.trim(), value: cf.value.trim(), type: "text" })),
         domainBindings: (profile == null ? void 0 : profile.domainBindings) ?? []
       };
       if (isEditing && profile) {
@@ -14277,6 +14286,33 @@ function ProfileFormModal({ profile, onClose }) {
         /* @__PURE__ */ jsxRuntimeExports.jsx(Field, { label: "Experience (Years)", children: /* @__PURE__ */ jsxRuntimeExports.jsx("input", { ...register("experienceYears"), type: "number", min: "0", max: "50", className: "input" }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(Field, { label: "Experience (Months)", children: /* @__PURE__ */ jsxRuntimeExports.jsx("input", { ...register("experienceMonths"), type: "number", min: "0", max: "11", className: "input" }) })
       ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Controller,
+        {
+          name: "experienceUseRaw",
+          control,
+          render: ({ field }) => /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "flex items-center gap-2 cursor-pointer select-none", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "input",
+              {
+                type: "checkbox",
+                checked: !!field.value,
+                onChange: (e) => field.onChange(e.target.checked),
+                className: "rounded"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs text-slate-600 dark:text-slate-400", children: "Paste experience as-is (custom text)" })
+          ] })
+        }
+      ),
+      watch("experienceUseRaw") && /* @__PURE__ */ jsxRuntimeExports.jsx(Field, { label: "Custom experience text", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "input",
+        {
+          ...register("experienceRaw"),
+          className: "input",
+          placeholder: "e.g. 5 years, 4+ years experience, Fresher"
+        }
+      ) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(Field, { label: "Skills (comma-separated)", children: /* @__PURE__ */ jsxRuntimeExports.jsx("textarea", { ...register("skills"), className: "input resize-none", rows: 2, placeholder: "React, TypeScript, Node.js" }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(Field, { label: "Notice Period", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("select", { ...register("noticePeriod"), className: "input", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "", children: "Select" }),
@@ -14301,6 +14337,65 @@ function ProfileFormModal({ profile, onClose }) {
       /* @__PURE__ */ jsxRuntimeExports.jsx(Field, { label: "Aadhaar Number", children: /* @__PURE__ */ jsxRuntimeExports.jsx("input", { ...register("aadhaarNumber"), className: "input", maxLength: 12, placeholder: "12-digit Aadhaar" }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(Field, { label: "PAN Number", children: /* @__PURE__ */ jsxRuntimeExports.jsx("input", { ...register("panNumber"), className: "input", maxLength: 10, placeholder: "ABCDE1234F", style: { textTransform: "uppercase" } }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(Field, { label: "Passport Number", children: /* @__PURE__ */ jsxRuntimeExports.jsx("input", { ...register("passportNumber"), className: "input", maxLength: 8, placeholder: "A1234567", style: { textTransform: "uppercase" } }) })
+    ] }),
+    Custom: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-3", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-blue-700 dark:text-blue-300 font-medium mb-1", children: "Manual field mappings" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-blue-600 dark:text-blue-400", children: [
+          "Use the field's ",
+          /* @__PURE__ */ jsxRuntimeExports.jsx("code", { className: "bg-blue-100 dark:bg-blue-800 px-1 rounded", children: "name" }),
+          ", ",
+          /* @__PURE__ */ jsxRuntimeExports.jsx("code", { className: "bg-blue-100 dark:bg-blue-800 px-1 rounded", children: "id" }),
+          ", ",
+          /* @__PURE__ */ jsxRuntimeExports.jsx("code", { className: "bg-blue-100 dark:bg-blue-800 px-1 rounded", children: "placeholder" }),
+          ", or a CSS selector to target fields the auto-detect misses."
+        ] })
+      ] }),
+      customFields.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-400 dark:text-slate-500 text-center py-4", children: "No custom fields yet — click Add below" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-2", children: customFields.map((cf, i2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-2 items-start", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 space-y-1", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "input",
+            {
+              value: cf.key,
+              onChange: (e) => setCustomFields((prev) => prev.map((f, j) => j === i2 ? { ...f, key: e.target.value } : f)),
+              className: "input text-xs",
+              placeholder: 'Field: name, id, or [data-qa="x"]'
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "input",
+            {
+              value: cf.value,
+              onChange: (e) => setCustomFields((prev) => prev.map((f, j) => j === i2 ? { ...f, value: e.target.value } : f)),
+              className: "input text-xs",
+              placeholder: "Value to fill"
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            type: "button",
+            onClick: () => setCustomFields((prev) => prev.filter((_, j) => j !== i2)),
+            className: "mt-1 p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/30 text-red-400 hover:text-red-600 transition-colors shrink-0",
+            title: "Remove",
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { size: 14 })
+          }
+        )
+      ] }, cf.id)) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "button",
+        {
+          type: "button",
+          onClick: () => setCustomFields((prev) => [...prev, { id: crypto.randomUUID(), key: "", value: "" }]),
+          className: "w-full btn-ghost btn-sm gap-1.5 border border-dashed border-slate-300 dark:border-slate-700 hover:border-brand-400",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, { size: 14 }),
+            "Add Custom Field"
+          ]
+        }
+      )
     ] })
   };
   const tabIndex = TABS.indexOf(tab);

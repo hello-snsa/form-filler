@@ -54,6 +54,8 @@ const profileSchema = z.object({
   degree: z.string().optional(),
   graduationYear: z.string().optional(),
   cgpa: z.string().optional(),
+  experienceRaw: z.string().optional(),
+  experienceUseRaw: z.boolean().optional(),
   // Identity
   aadhaarNumber: z.string().optional(),
   panNumber: z.string().optional(),
@@ -67,7 +69,7 @@ interface Props {
   onClose: () => void;
 }
 
-const TABS = ['Basic', 'Personal', 'Address', 'Professional', 'Identity'] as const;
+const TABS = ['Basic', 'Personal', 'Address', 'Professional', 'Identity', 'Custom'] as const;
 type Tab = typeof TABS[number];
 
 const COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#f97316', '#10b981', '#06b6d4', '#3b82f6'];
@@ -94,9 +96,12 @@ export default function ProfileFormModal({ profile, onClose }: Props) {
   const { createProfile, updateProfile } = useProfileStore();
   const [tab, setTab] = useState<Tab>('Basic');
   const [saving, setSaving] = useState(false);
+  const [customFields, setCustomFields] = useState<Array<{ id: string; key: string; value: string }>>(
+    () => (profile?.customFields ?? []).map(cf => ({ id: cf.id, key: cf.key, value: cf.value }))
+  );
   const isEditing = !!profile;
 
-  const { register, handleSubmit, control, setValue, getValues, formState: { errors } } = useForm<FormValues>({
+  const { register, handleSubmit, control, setValue, getValues, watch, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: profile ? {
       name: profile.name,
@@ -127,6 +132,8 @@ export default function ProfileFormModal({ profile, onClose }: Props) {
       department: profile.professional.department,
       experienceYears: profile.professional.experienceYears,
       experienceMonths: profile.professional.experienceMonths,
+      experienceRaw: profile.professional.experienceRaw ?? '',
+      experienceUseRaw: profile.professional.experienceUseRaw ?? false,
       skills: profile.professional.skills.join(', '),
       noticePeriod: profile.professional.noticePeriod,
       currentSalary: profile.professional.currentSalary,
@@ -216,6 +223,8 @@ export default function ProfileFormModal({ profile, onClose }: Props) {
           department: values.department ?? '',
           experienceYears: values.experienceYears ?? 0,
           experienceMonths: values.experienceMonths ?? 0,
+          experienceRaw: values.experienceRaw ?? '',
+          experienceUseRaw: values.experienceUseRaw ?? false,
           skills: (values.skills ?? '').split(',').map(s => s.trim()).filter(Boolean),
           noticePeriod: values.noticePeriod ?? '',
           currentSalary: values.currentSalary ?? '',
@@ -234,7 +243,9 @@ export default function ProfileFormModal({ profile, onClose }: Props) {
           passportNumber: values.passportNumber,
         },
         documents: profile?.documents ?? { certificates: [] },
-        customFields: profile?.customFields ?? [],
+        customFields: customFields
+          .filter(cf => cf.key.trim() && cf.value.trim())
+          .map(cf => ({ id: cf.id, key: cf.key.trim(), value: cf.value.trim(), type: 'text' as const })),
         domainBindings: profile?.domainBindings ?? [],
       };
 
@@ -396,6 +407,32 @@ export default function ProfileFormModal({ profile, onClose }: Props) {
             <input {...register('experienceMonths')} type="number" min="0" max="11" className="input" />
           </Field>
         </div>
+        <Controller
+          name="experienceUseRaw"
+          control={control}
+          render={({ field }) => (
+            <label className="flex items-center gap-2 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={!!field.value}
+                onChange={e => field.onChange(e.target.checked)}
+                className="rounded"
+              />
+              <span className="text-xs text-slate-600 dark:text-slate-400">
+                Paste experience as-is (custom text)
+              </span>
+            </label>
+          )}
+        />
+        {watch('experienceUseRaw') && (
+          <Field label="Custom experience text">
+            <input
+              {...register('experienceRaw')}
+              className="input"
+              placeholder="e.g. 5 years, 4+ years experience, Fresher"
+            />
+          </Field>
+        )}
         <Field label="Skills (comma-separated)">
           <textarea {...register('skills')} className="input resize-none" rows={2} placeholder="React, TypeScript, Node.js" />
         </Field>
@@ -457,6 +494,61 @@ export default function ProfileFormModal({ profile, onClose }: Props) {
         <Field label="Passport Number">
           <input {...register('passportNumber')} className="input" maxLength={8} placeholder="A1234567" style={{ textTransform: 'uppercase' }} />
         </Field>
+      </div>
+    ),
+
+    Custom: (
+      <div className="space-y-3">
+        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+          <p className="text-xs text-blue-700 dark:text-blue-300 font-medium mb-1">Manual field mappings</p>
+          <p className="text-xs text-blue-600 dark:text-blue-400">
+            Use the field's <code className="bg-blue-100 dark:bg-blue-800 px-1 rounded">name</code>, <code className="bg-blue-100 dark:bg-blue-800 px-1 rounded">id</code>, <code className="bg-blue-100 dark:bg-blue-800 px-1 rounded">placeholder</code>, or a CSS selector to target fields the auto-detect misses.
+          </p>
+        </div>
+
+        {customFields.length === 0 && (
+          <p className="text-xs text-slate-400 dark:text-slate-500 text-center py-4">
+            No custom fields yet — click Add below
+          </p>
+        )}
+
+        <div className="space-y-2">
+          {customFields.map((cf, i) => (
+            <div key={cf.id} className="flex gap-2 items-start">
+              <div className="flex-1 space-y-1">
+                <input
+                  value={cf.key}
+                  onChange={e => setCustomFields(prev => prev.map((f, j) => j === i ? { ...f, key: e.target.value } : f))}
+                  className="input text-xs"
+                  placeholder='Field: name, id, or [data-qa="x"]'
+                />
+                <input
+                  value={cf.value}
+                  onChange={e => setCustomFields(prev => prev.map((f, j) => j === i ? { ...f, value: e.target.value } : f))}
+                  className="input text-xs"
+                  placeholder="Value to fill"
+                />
+              </div>
+              <button
+                type="button"
+                onClick={() => setCustomFields(prev => prev.filter((_, j) => j !== i))}
+                className="mt-1 p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/30 text-red-400 hover:text-red-600 transition-colors shrink-0"
+                title="Remove"
+              >
+                <Trash2 size={14} />
+              </button>
+            </div>
+          ))}
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setCustomFields(prev => [...prev, { id: crypto.randomUUID(), key: '', value: '' }])}
+          className="w-full btn-ghost btn-sm gap-1.5 border border-dashed border-slate-300 dark:border-slate-700 hover:border-brand-400"
+        >
+          <Plus size={14} />
+          Add Custom Field
+        </button>
       </div>
     ),
   };

@@ -433,7 +433,7 @@
       company: pro.currentCompany,
       designation: pro.designation,
       department: pro.department,
-      experience: `${pro.experienceYears} years ${pro.experienceMonths} months`,
+      experience: pro.experienceUseRaw && pro.experienceRaw ? pro.experienceRaw : pro.experienceMonths === 0 ? String(pro.experienceYears) : `${pro.experienceYears}.${pro.experienceMonths}`,
       noticePeriod: pro.noticePeriod,
       currentSalary: pro.currentSalary,
       expectedSalary: pro.expectedSalary,
@@ -557,6 +557,7 @@
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
   async function fillForm(profile, options = {}) {
+    var _a;
     const start = Date.now();
     const { skipFilled = true, delay = 50, minConfidence = 0.1 } = options;
     const fields = detectFormFields();
@@ -607,14 +608,46 @@
         results.push({ field, success: false, error: String(e) });
       }
     }
+    for (const cf of profile.customFields ?? []) {
+      if (!cf.key || !cf.value) continue;
+      let el = null;
+      try {
+        el = document.querySelector(cf.key);
+      } catch {
+      }
+      if (!el) el = document.querySelector(`[name="${cf.key}"]`);
+      if (!el) el = document.querySelector(`#${CSS.escape(cf.key)}`);
+      if (!el) el = document.querySelector(`[placeholder="${cf.key}"]`);
+      if (!el) continue;
+      const tag = el.tagName.toLowerCase();
+      const inputType = tag === "input" ? ((_a = el.type) == null ? void 0 : _a.toLowerCase()) ?? "text" : "";
+      let cfSuccess = false;
+      if (tag === "select") {
+        cfSuccess = await fillSelect(el, cf.value, delay);
+      } else if (tag === "textarea" || tag === "input" && !["file", "checkbox", "radio", "submit", "button", "image", "reset"].includes(inputType)) {
+        cfSuccess = await fillTextInput(el, cf.value, delay);
+      }
+      results.push({
+        field: {
+          element: el,
+          type: getFieldType(el),
+          category: "unknown",
+          confidence: 1,
+          label: cf.key,
+          required: el.hasAttribute("required")
+        },
+        success: cfSuccess,
+        value: cfSuccess ? cf.value : void 0
+      });
+    }
     const filled = results.filter((r) => r.success).length;
     const skipped = results.filter((r) => {
-      var _a;
-      return !r.success && ((_a = r.error) == null ? void 0 : _a.includes("already filled"));
+      var _a2;
+      return !r.success && ((_a2 = r.error) == null ? void 0 : _a2.includes("already filled"));
     }).length;
     const failed = results.filter((r) => {
-      var _a;
-      return !r.success && !((_a = r.error) == null ? void 0 : _a.includes("already filled"));
+      var _a2;
+      return !r.success && !((_a2 = r.error) == null ? void 0 : _a2.includes("already filled"));
     }).length;
     return {
       url: window.location.href,

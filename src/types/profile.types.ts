@@ -32,6 +32,8 @@ export interface ProfessionalInfo {
   department: string;
   experienceYears: number;
   experienceMonths: number;
+  experienceRaw?: string;
+  experienceUseRaw?: boolean;
   skills: string[];
   noticePeriod: string;
   currentSalary: string;

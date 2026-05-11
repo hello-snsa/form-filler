@@ -1,6 +1,6 @@
 import type { Profile } from '@/types/profile.types';
 import type { DetectedField, FillResult, FormFillReport, FieldCategory } from '@/types/form.types';
-import { detectFormFields } from '@/content/matchers/fieldMatcher';
+import { detectFormFields, getFieldType } from '@/content/matchers/fieldMatcher';
 import { dispatchInputEvents, dispatchSelectEvents, dispatchCheckboxEvents } from './eventDispatcher';
 import { uploadFileToInput, dataUrlToFile } from './fileUploader';
 
@@ -32,7 +32,11 @@ function resolveValue(category: FieldCategory, profile: Profile): string | null 
     company: pro.currentCompany,
     designation: pro.designation,
     department: pro.department,
-    experience: `${pro.experienceYears} years ${pro.experienceMonths} months`,
+    experience: pro.experienceUseRaw && pro.experienceRaw
+      ? pro.experienceRaw
+      : pro.experienceMonths === 0
+        ? String(pro.experienceYears)
+        : `${pro.experienceYears}.${pro.experienceMonths}`,
     noticePeriod: pro.noticePeriod,
     currentSalary: pro.currentSalary,
     expectedSalary: pro.expectedSalary,
@@ -261,6 +265,42 @@ export async function fillForm(
     } catch (e) {
       results.push({ field, success: false, error: String(e) });
     }
+  }
+
+  // Apply manual custom field mappings (bypass auto-detection)
+  for (const cf of profile.customFields ?? []) {
+    if (!cf.key || !cf.value) continue;
+
+    // Try CSS selector first, then name/id/placeholder attribute shortcuts
+    let el: HTMLElement | null = null;
+    try { el = document.querySelector<HTMLElement>(cf.key); } catch { /* invalid CSS selector */ }
+    if (!el) el = document.querySelector<HTMLElement>(`[name="${cf.key}"]`);
+    if (!el) el = document.querySelector<HTMLElement>(`#${CSS.escape(cf.key)}`);
+    if (!el) el = document.querySelector<HTMLElement>(`[placeholder="${cf.key}"]`);
+    if (!el) continue;
+
+    const tag = el.tagName.toLowerCase();
+    const inputType = tag === 'input' ? (el as HTMLInputElement).type?.toLowerCase() ?? 'text' : '';
+    let cfSuccess = false;
+
+    if (tag === 'select') {
+      cfSuccess = await fillSelect(el as HTMLSelectElement, cf.value, delay);
+    } else if (tag === 'textarea' || (tag === 'input' && !['file', 'checkbox', 'radio', 'submit', 'button', 'image', 'reset'].includes(inputType))) {
+      cfSuccess = await fillTextInput(el as HTMLInputElement, cf.value, delay);
+    }
+
+    results.push({
+      field: {
+        element: el,
+        type: getFieldType(el),
+        category: 'unknown',
+        confidence: 1,
+        label: cf.key,
+        required: el.hasAttribute('required'),
+      },
+      success: cfSuccess,
+      value: cfSuccess ? cf.value : undefined,
+    });
   }
 
   const filled = results.filter(r => r.success).length;
