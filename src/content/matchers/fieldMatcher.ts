@@ -327,7 +327,12 @@ export function detectFormFields(container: Document | HTMLElement = document): 
   return elements
     .filter(el => {
       const rect = el.getBoundingClientRect();
-      return rect.width > 0 || rect.height > 0 || el.closest('form') !== null;
+      if (rect.width > 0 || rect.height > 0) return true;
+      // Accept elements in forms, dialogs, or ARIA modal containers even if dimensions are 0
+      // (e.g. sidebars mid-animation, off-screen panels, CSS-transformed overlays)
+      if (el.closest('form, dialog, [role="dialog"], [aria-modal="true"], [role="complementary"]')) return true;
+      const style = window.getComputedStyle(el);
+      return style.display !== 'none' && style.visibility !== 'hidden' && style.visibility !== 'collapse';
     })
     .map(el => {
       const { category, confidence } = detectFieldCategory(el);

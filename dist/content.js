@@ -308,7 +308,10 @@
     const elements = Array.from(container.querySelectorAll(selector));
     return elements.filter((el) => {
       const rect = el.getBoundingClientRect();
-      return rect.width > 0 || rect.height > 0 || el.closest("form") !== null;
+      if (rect.width > 0 || rect.height > 0) return true;
+      if (el.closest('form, dialog, [role="dialog"], [aria-modal="true"], [role="complementary"]')) return true;
+      const style = window.getComputedStyle(el);
+      return style.display !== "none" && style.visibility !== "hidden" && style.visibility !== "collapse";
     }).map((el) => {
       const { category, confidence } = detectFieldCategory(el);
       const type = getFieldType(el);
@@ -324,6 +327,26 @@
         acceptedTypes: type === "file" ? el.accept : void 0
       };
     });
+  }
+  function tryReactFiberOnChange(el, value) {
+    try {
+      const fiberKey = Object.keys(el).find(
+        (k) => k.startsWith("__reactFiber") || k.startsWith("__reactInternalInstance")
+      );
+      if (!fiberKey) return;
+      let fiber = el[fiberKey];
+      for (let i = 0; i < 3 && fiber; i++) {
+        const props = fiber.memoizedProps;
+        if (typeof (props == null ? void 0 : props.onChange) === "function") {
+          props.onChange({ target: el, currentTarget: el, type: "change", nativeEvent: null, preventDefault: () => {
+          }, stopPropagation: () => {
+          } });
+          return;
+        }
+        fiber = fiber.return ?? null;
+      }
+    } catch {
+    }
   }
   function nativeInputValueSetter(el, value) {
     var _a, _b;
@@ -354,6 +377,7 @@
     }
     el.dispatchEvent(new Event("blur", { bubbles: true }));
     el.dispatchEvent(new FocusEvent("focusout", { bubbles: true }));
+    if (value !== void 0) tryReactFiberOnChange(el);
   }
   function dispatchSelectEvents(el, value) {
     el.value = value;

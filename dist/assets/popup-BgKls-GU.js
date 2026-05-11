@@ -1,4 +1,4 @@
-import { r as reactExports, j as jsxRuntimeExports, c as createLucideIcon, u as useProfileStore, a as useSettingsStore, R as React, b as cn, Z as Zap, S as Settings, d as client } from "./globals-BGesI9_U.js";
+import { r as reactExports, j as jsxRuntimeExports, c as createLucideIcon, u as useProfileStore, a as useSettingsStore, R as React, b as cn, Z as Zap, S as Settings, d as client } from "./globals-BbbGDKs3.js";
 import "./settingsRepository-BCIK-jsw.js";
 const LayoutGroupContext = reactExports.createContext({});
 function useConstant(init) {
@@ -7789,7 +7789,8 @@ function Dashboard({ onNavigate }) {
           fillStatus === "success" && /* @__PURE__ */ jsxRuntimeExports.jsx(CheckCircle, { size: 15 }),
           fillStatus === "error" && /* @__PURE__ */ jsxRuntimeExports.jsx(AlertCircle, { size: 15 }),
           fillStatus === "filling" && "Filling form…",
-          fillStatus === "success" && fillResult && `Filled ${fillResult.filled}/${fillResult.total} fields`,
+          fillStatus === "success" && fillResult && fillResult.filled > 0 && `Filled ${fillResult.filled}/${fillResult.total} fields`,
+          fillStatus === "success" && fillResult && fillResult.filled === 0 && "No fields filled — try ⌘⇧F inside the modal",
           fillStatus === "error" && "Fill failed — try refreshing the page"
         ]
       }

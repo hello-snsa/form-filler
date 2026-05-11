@@ -155,7 +155,8 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
           {fillStatus === 'success' && <CheckCircle size={15} />}
           {fillStatus === 'error' && <AlertCircle size={15} />}
           {fillStatus === 'filling' && 'Filling form…'}
-          {fillStatus === 'success' && fillResult && `Filled ${fillResult.filled}/${fillResult.total} fields`}
+          {fillStatus === 'success' && fillResult && fillResult.filled > 0 && `Filled ${fillResult.filled}/${fillResult.total} fields`}
+          {fillStatus === 'success' && fillResult && fillResult.filled === 0 && 'No fields filled — try ⌘⇧F inside the modal'}
           {fillStatus === 'error' && 'Fill failed — try refreshing the page'}
         </motion.div>
       )}
